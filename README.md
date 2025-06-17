@@ -70,6 +70,7 @@ Email: test@gmail.com
     npm install
     npm run dev
     Для production-сборки:
+    npm run build
 ```
 
 npm run build
