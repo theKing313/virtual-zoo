@@ -21,6 +21,7 @@ class CageController extends Controller
     public function create()
     {
           return view('cages.create');
+          
     }
 
     /**

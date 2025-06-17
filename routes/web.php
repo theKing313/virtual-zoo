@@ -6,26 +6,35 @@ use App\Http\Controllers\CageController;
 use App\Http\Controllers\AnimalController;
 
 
-// Главная страница (по желанию можно редиректить на /cages)
-Route::get('/', function () {
-    return redirect()->route('cages.index');
-});
-
-// Профиль — доступен только авторизованным
+// Главная страница
+Route::get('/', fn () => redirect()->route('cages.index'));
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->name('dashboard');
+// Профиль
 Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Все маршруты для CageController — только для авторизованных и верифицированных
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
 
-    Route::resource('animals', AnimalController::class)->middleware(['auth']);
-    Route::resource('cages', CageController::class);
+// Приватные маршруты (создание, изменение, удаление)
+Route::middleware(['auth'])->group(function () {
+    
+    Route::resource('cages', CageController::class)->except(['index', 'show']);
+    Route::resource('animals', AnimalController::class)->except(['index', 'show']);
 });
+// Публичные маршруты (только просмотр)
+Route::resource('cages', CageController::class)->only(['index', 'show']);
+Route::resource('animals', AnimalController::class)->only(['index', 'show']);
+
+
+
+// Route::resource('cages', CageController::class)->middleware(['auth'])->except(['index', 'show']);
+
+
+
+
 
 require __DIR__.'/auth.php';

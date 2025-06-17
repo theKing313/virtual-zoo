@@ -8,8 +8,9 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <a href="{{ route('cages.create') }}" class="btn btn-primary mb-3">Добавить клетку</a>
-
+   @auth
+        <a href="{{ route('cages.create') }}" class="btn btn-primary mb-3">Добавить клетку</a>
+    @endauth
     <div class="row">
         @forelse($cages as $cage)
             <div class="col-md-4 mb-4">

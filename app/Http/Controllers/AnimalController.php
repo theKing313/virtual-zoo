@@ -12,7 +12,8 @@ class AnimalController extends Controller
      */
     public function index()
     {
-        //
+        $animals = Animal::with('cage')->get();
+        return view('animals.index', compact('animals'));
     }
 
     /**
@@ -53,7 +54,8 @@ class AnimalController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $animal = Animal::with('cage')->findOrFail($id);
+        return view('animals.show', compact('animal'));
     }
 
     /**
@@ -61,7 +63,9 @@ class AnimalController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $animal = Animal::findOrFail($id);
+        $cages = Cage::all();
+        return view('animals.edit', compact('animal', 'cages'));
     }
 
     /**
@@ -69,7 +73,18 @@ class AnimalController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+           $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'species' => 'required|string|max:255',
+            'age' => 'required|integer|min:0',
+            'description' => 'nullable|string',
+            'cage_id' => 'required|exists:cages,id',
+        ]);
+
+        $animal = Animal::findOrFail($id);
+        $animal->update($validated);
+
+        return redirect()->route('animals.index')->with('success', 'Животное обновлено');
     }
 
     /**
@@ -77,6 +92,9 @@ class AnimalController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $animal = Animal::findOrFail($id);
+        $animal->delete();
+
+        return redirect()->route('animals.index')->with('success', 'Животное удалено');
     }
 }
